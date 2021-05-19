@@ -53,4 +53,53 @@ while ((1==1))
 done
 ```
 
-3. 
+3. Скрипт проверки доступности хостов по порту 80
+```bash
+#!/bin/bash
+
+logfile="out.log"
+port=80
+hosts=("192.168.0.1" "173.194.222.113" "87.250.250.242")
+
+for i in {0..4}
+do
+  for host in ${hosts[@]}
+  do
+    nc -z -w1 $host $port
+    rc=$?
+    if (($rc == 0))
+    then
+      echo `date` $host OK >> $logfile
+    else
+      echo `date` $host ERROR >> $logfile
+    fi
+  done
+done
+```
+
+4. Модификация скипта "Если любой из узлов недоступен - IP этого узла пишется в файл error, скрипт прерывается"
+```bash
+#!/bin/bash
+
+logfile="out.log"
+errfile="error"
+port=80
+hosts=("192.168.0.1" "173.194.222.113" "87.250.250.242")
+
+for i in {0..4}
+do
+  for host in ${hosts[@]}
+  do
+    nc -z -w1 $host $port
+    rc=$?
+    if (($rc == 0))
+    then
+      echo `date` $host OK >> $logfile
+    else
+      echo `date` $host ERROR >> $logfile
+      echo $host >> $errfile
+      exit 1
+    fi
+  done
+done
+```
