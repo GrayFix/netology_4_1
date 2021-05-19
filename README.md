@@ -103,3 +103,35 @@ do
   done
 done
 ```
+
+5. Пример hook-а для Git.
+Хук идет через файл .git/hooks/commit-msg
+Содержимое файла:
+```bash
+#!/bin/bash
+
+template="\[.*\]"
+commitfile=$1
+maxlength=30
+
+length=`cat $commitfile | wc -c`
+(grep -Eq $template $commitfile) && match=1 || match=0
+
+if (($match == 0))
+then
+  echo >&2 Commit message not match template.
+  err=1
+fi
+
+if (("$length" > "$maxlength"))
+then
+  echo >&2 Commit message too long. Max length $maxlength.
+  err=1
+fi
+
+if ((err == 1))
+then
+  exit 1
+fi
+```
+
